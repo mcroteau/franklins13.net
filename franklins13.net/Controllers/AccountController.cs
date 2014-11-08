@@ -11,6 +11,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Collections.Generic;
 using franklins13.net.Models;
+using Newtonsoft.Json;
 
 namespace IdentitySample.Controllers
 {
@@ -411,6 +412,31 @@ namespace IdentitySample.Controllers
         }
 
 
+        //public ActionResult Week()
+        public JsonResult Week()
+        {
+
+            var user = UserManager.FindById(User.Identity.GetUserId());
+
+            var EntriesList = new List<Entry>();
+
+            var today = DateTime.Now;
+            var weekAgo = today.AddDays(-7);
+
+            var query = from e in db.Entries
+                        where e.EntryDate < today
+                            && e.EntryDate > weekAgo
+                            && e.UserID == user.Id
+                        select e;
+
+            EntriesList.AddRange(query.Distinct());
+
+            var s = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+            var m = JsonConvert.SerializeObject(EntriesList, Formatting.None, s);
+
+            return Json(m, JsonRequestBehavior.AllowGet);
+            //return View(EntriesList);
+        }
 
 
 
