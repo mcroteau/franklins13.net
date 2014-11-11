@@ -9,6 +9,7 @@ using franklins13.net.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Data.Entity;
 
 
 namespace franklins13.net.Controllers
@@ -29,7 +30,7 @@ namespace franklins13.net.Controllers
 
 
         [Authorize]
-        public JsonResult Today()
+        public ActionResult Today()
         {
             var user = UserManager.FindById(User.Identity.GetUserId());
             var today = DateTime.Now;
@@ -55,12 +56,14 @@ namespace franklins13.net.Controllers
             var settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             var data = JsonConvert.SerializeObject(entry, Formatting.None, settings);
 
-            return Json(data, JsonRequestBehavior.AllowGet);
+            //return Json(data, JsonRequestBehavior.AllowGet);
+            return View(entry);
         }
 
 
         [HttpPost]
-        public JsonResult SaveEntry()
+        [Authorize]
+        public JsonResult Save()
         {
             var user = UserManager.FindById(User.Identity.GetUserId());
 
@@ -73,6 +76,13 @@ namespace franklins13.net.Controllers
             try
             {
                 entry = JsonConvert.DeserializeObject<Entry>(json);
+                var existingEntry = db.Entries.Find(entry.Id);
+                if (existingEntry != null)
+                {
+                    db.Entry(existingEntry).CurrentValues.SetValues(entry);
+                    db.SaveChanges();
+                    return Json("");
+                }
             }
             catch (Exception e)
             {
@@ -82,8 +92,26 @@ namespace franklins13.net.Controllers
             var settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             var data = JsonConvert.SerializeObject(entry, Formatting.None, settings);
             return Json(data, JsonRequestBehavior.AllowGet);
+
         }
 
 
+
+        public JsonResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return Json(new HttpStatusCodeResult(HttpStatusCode.BadRequest));
+            }
+            Entry entry = db.Entries.Find(id);
+            if (entry == null)
+            {
+                return Json(HttpNotFound());
+            }
+
+            var settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+            var data = JsonConvert.SerializeObject(entry, Formatting.None, settings);
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
     }
 }

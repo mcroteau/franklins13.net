@@ -1,18 +1,92 @@
-﻿
+﻿@section JavaScript{
+    <!--<script type="text/javascript" src="@Url.Content("/Scripts/ractive.min.js")"></script>-->
+    <script type="text/javascript" src="@Url.Content("/Scripts/mustache.js")"></script>
+}
+
 @{
     ViewBag.Title = "View";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>View</h2>
+<h2>Todays Entry</h2>
+
+<style type="text/css">
+    .form-control{
+        width:35px;
+        text-align:center;
+        display:inline-block;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    
+    <div id="entry-container">
+
+        <div class="row">
+            <div class="col-md-12">
+                <span class="principal">Silence</span>
+                <a href="javascript:" class="btn btn-default btn-lg">-</a>
+                <input type="text" name="" class="form-control"/>
+                <a href="javascript:" class="btn btn-default btn-lg">+</a>
+            </div>
+        </div>
+
+    </div>
+
+}
+
+<a href="javascript:" id="submit">Submit</a>
 
 
+<script type="text/template">
 
+</script>
 
 
 <script type="text/javascript">
 $(document).ready(function () {
 
+    var $submit = $('#submit');
+    $submit.click(submit);
+
+
+    function submit() {
+        var mockEntry = {
+            "Id": 2,
+            "Temperance": -8,
+            "Silence": -4,
+            "Order": -7,
+            "Resolution": 2,
+            "Frugality": -1,
+            "Industry": -12,
+            "Sincerity": 13,
+            "Justice": 16,
+            "Moderation": 3,
+            "Cleanliness": 10,
+            "Tranquility": 5,
+            "Chastity": -15,
+            "Humility": -1,
+            "EntryDate": "2014-11-09T08:57:24.327",
+            "UserID": "63079c23-8dcf-4e12-89f2-162cbfa9dc35"
+        };
+
+
+        $.ajax({
+            type: 'post',
+            url: '/Entry/Save',
+            contentType: 'application/json',
+            data: JSON.stringify(mockEntry),
+            dataType : 'json',
+            success: function (data) {
+                console.info(data);
+            },
+            error: function () {
+                console.warn('error')
+            }
+        })
+
+    }
 
 });
 </script>
