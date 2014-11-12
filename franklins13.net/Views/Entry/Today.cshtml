@@ -1,6 +1,6 @@
 ﻿@section JavaScript{
-    <!--<script type="text/javascript" src="@Url.Content("/Scripts/ractive.min.js")"></script>-->
-    <script type="text/javascript" src="@Url.Content("/Scripts/mustache.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Scripts/ractive.js")"></script>
+    <!--<script type="text/javascript" src="@Url.Content("/Scripts/mustache.js")"></script>-->
 }
 
 @{
@@ -21,11 +21,11 @@
 @using (Html.BeginForm())
 {
     
-    <div id="entry-container">
+    <div id="entry-container" style="text-align:center">
 
         <div class="row">
-            <div class="col-md-12">
-                <span class="principal">Silence</span>
+            <div class="col-md-12" style="margin:auto;">
+                <span class="principal">Temperance</span>
                 <a href="javascript:" class="btn btn-default btn-lg">-</a>
                 <input type="text" name="" class="form-control"/>
                 <a href="javascript:" class="btn btn-default btn-lg">+</a>
@@ -39,16 +39,68 @@
 <a href="javascript:" id="submit">Submit</a>
 
 
-<script type="text/template">
-
+<script type="text/template" id="virtue_template">
+{{#virtues:i}}
+    <div id="row_virtue_{{i}}" class="row">
+        <div class="col-md-12" style="margin:auto;">
+            <span class="principal">{{virtue}}</span>
+            <a href="javascript:" class="btn btn-default btn-lg" on-click="decrement">-</a>
+            <input type="text" name="{{virtue}}" class="form-control" value="{{value}}"/>
+            <a href="javascript:" class="btn btn-default btn-lg" on-click="increment">+</a>
+        </div>
+    </div>
+{{/virtues}}
 </script>
+
 
 
 <script type="text/javascript">
 $(document).ready(function () {
 
-    var $submit = $('#submit');
+    var $submit = $('#submit'),
+        $entryContainer = $('#entry_container');
+
     $submit.click(submit);
+
+    var ractive;
+
+    function init() {
+        load().then(render).fail(failed);
+    }
+
+
+    function render(data) {
+        ractive = new Ractive({
+            el: 'entry-container',
+            template: '#virtue_template',
+            data : data
+        });
+
+        ractive.on('increment', function () {
+            console.log('increment');
+        });
+
+        ractive.on('decrement', function () {
+            console.warn('decrement');
+        });
+    }
+
+
+    function failed() {
+        console.warn('failed to load data');
+    }
+
+
+    function load() {
+        $.ajax({
+            url: '/Entry/TodaysData',
+            type: 'get',
+            dataType : 'json'
+        })
+    }
+
+
+
 
 
     function submit() {

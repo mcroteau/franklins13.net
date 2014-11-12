@@ -97,6 +97,13 @@ namespace franklins13.net.Controllers
 
 
 
+
+
+
+
+
+
+
         public JsonResult Edit(int? id)
         {
             if (id == null)
@@ -112,6 +119,13 @@ namespace franklins13.net.Controllers
             var settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             var data = JsonConvert.SerializeObject(entry, Formatting.None, settings);
             return Json(data, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+
+        private JsonResult FormatData(original){
+
         }
     }
 }

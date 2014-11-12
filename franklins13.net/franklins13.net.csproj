@@ -150,9 +150,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <Content Include="Scripts\mustache.js" />
+    <Content Include="Scripts\ractive.js" />
     <Content Include="Scripts\ractive.min.js" />
     <Content Include="Views\Entry\Today.cshtml" />
-    <Content Include="Scripts\ractive.min" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
