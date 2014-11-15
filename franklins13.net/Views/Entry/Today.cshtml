@@ -11,8 +11,24 @@
 <h2>Todays Entry</h2>
 
 <style type="text/css">
+    .virtue-row{
+        margin:7px auto !important;
+        display:block;
+    }
+
+    .virtue-row:hover{
+        background:#f8f8f8;
+    }
+
+    .principal{
+        width:100px;
+        text-align:left;
+        display:inline-block;
+    }
+
     .form-control{
-        width:35px;
+        width:45px;
+        padding:4px;
         text-align:center;
         display:inline-block;
     }
@@ -23,7 +39,7 @@
     
     <div id="entry-container" style="text-align:center">
 
-        <div class="row">
+        <div class="row virtue-row">
             <div class="col-md-12" style="margin:auto;">
                 <span class="principal">Temperance</span>
                 <a href="javascript:" class="btn btn-default btn-lg">-</a>
@@ -40,13 +56,13 @@
 
 
 <script type="text/template" id="virtue_template">
-{{#virtues:i}}
-    <div id="row_virtue_{{i}}" class="row">
+{{#virtues:virtue}}
+    <div id="row_virtue_{{i}}" class="row virtue-row">
         <div class="col-md-12" style="margin:auto;">
             <span class="principal">{{virtue}}</span>
-            <a href="javascript:" class="btn btn-default btn-lg" on-click="decrement">-</a>
-            <input type="text" name="{{virtue}}" class="form-control" value="{{value}}"/>
-            <a href="javascript:" class="btn btn-default btn-lg" on-click="increment">+</a>
+            <a href="javascript:" class="btn btn-default" on-click="decrement">-</a>
+            <input type="text" name="{{virtue}}" class="form-control" value="{{.}}" />
+            <a href="javascript:" class="btn btn-default" on-click="increment">+</a>
         </div>
     </div>
 {{/virtues}}
@@ -68,6 +84,53 @@ $(document).ready(function () {
         load().then(render).fail(failed);
     }
 
+    var data = {
+        "Id": 2,
+        "virtues": {
+            "Temperance": -8,
+            "Silence": -4,
+            "Order": -7,
+            "Resolution": 2,
+            "Frugality": -1,
+            "Industry": -12,
+            "Sincerity": 13,
+            "Justice": 16,
+            "Moderation": 3,
+            "Cleanliness": 10,
+            "Tranquility": 5,
+            "Chastity": -15,
+            "Humility": -1
+        },
+        "EntryDate": "2014-11-09T08:57:24.327",
+        "UserID": "63079c23-8dcf-4e12-89f2-162cbfa9dc35"
+    };
+
+    var data2 = {
+        "Id": 2,
+        "virtues": {
+            "Temperance": -1,
+            "Silence": -3,
+            "Order": 4,
+            "Resolution": -5,
+            "Frugality": 7,
+            "Industry": 2,
+            "Sincerity": 1,
+            "Justice": 5,
+            "Moderation": 7,
+            "Cleanliness": -5,
+            "Tranquility": -3,
+            "Chastity": -3,
+            "Humility": 4
+        },
+        "EntryDate": "2014-11-09T08:57:24.327",
+        "UserID": "63079c23-8dcf-4e12-89f2-162cbfa9dc35"
+    };
+
+
+    function submit() {
+        render(data);
+    }
+
 
     function render(data) {
         ractive = new Ractive({
@@ -76,12 +139,16 @@ $(document).ready(function () {
             data : data
         });
 
-        ractive.on('increment', function () {
-            console.log('increment');
+        ractive.on('increment', function (event) {
+            console.log('increment', event);
+            ractive.set('virtues.' + event.index.virtue, ++event.context);
+            console.log(ractive.data);
         });
 
-        ractive.on('decrement', function () {
-            console.warn('decrement');
+        ractive.on('decrement', function (event) {
+            console.warn('decrement', event);
+            ractive.set('virtues.' + event.index.virtue, --event.context);
+            console.log(ractive.data);
         });
     }
 
@@ -103,7 +170,7 @@ $(document).ready(function () {
 
 
 
-    function submit() {
+    function submits() {
         var mockEntry = {
             "Id": 2,
             "Temperance": -8,

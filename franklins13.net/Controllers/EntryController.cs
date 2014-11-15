@@ -98,12 +98,6 @@ namespace franklins13.net.Controllers
 
 
 
-
-
-
-
-
-
         public JsonResult Edit(int? id)
         {
             if (id == null)
@@ -124,8 +118,16 @@ namespace franklins13.net.Controllers
 
 
 
-        private JsonResult FormatData(original){
+        public JsonResult TodaysData()
+        {
 
+            return Json("");
+        }
+
+
+
+        private JsonResult FormatData(string original){
+            return Json("");
         }
     }
 }
