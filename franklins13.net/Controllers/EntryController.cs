@@ -70,7 +70,7 @@ namespace franklins13.net.Controllers
                 db.SaveChanges();
             }
 
-            entry.ApplicationUser.Entries = null;
+            //entry.ApplicationUser.Entries = null;
 
             return View(entry);
         }

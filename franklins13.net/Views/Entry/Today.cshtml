@@ -35,15 +35,7 @@
 
 </style>
 
-<div class="modal" id="modal">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-body">
-                <p>Loading&hellip;</p>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="modal" id="modal"></div>
 
 
 <div class="row">
@@ -68,7 +60,7 @@
         <div class="col-md-12" style="margin:auto;">
             <span class="principal">{{virtue}}</span>
             <a href="javascript:" class="btn btn-default" on-click="decrement">-</a>
-            <input type="text" name="{{virtue}}" class="form-control" value="{{.}}" />
+            <span class="label label-default">{{.}}</span>
             <a href="javascript:" class="btn btn-default" on-click="increment">+</a>
         </div>
     </div>
@@ -85,7 +77,11 @@ $(document).ready(function () {
     var $id = $('#id'),
         $modal = $('#modal');
 
+    var $virtueValues;
+
     var $entryContainer = $('#entry_container');
+
+    var change = { virtue: "", value: "" };
 
 
     function init() {
@@ -93,85 +89,130 @@ $(document).ready(function () {
     }
 
 
+    function load() {
+        return $.ajax({
+            url: '/Entry/TodaysData/' + $id.val(),
+            type: 'get',
+            dataType: 'json'
+        })
+    }
+
+
     function render(data) {
+
+        console.info(data);
+
         ractive = new Ractive({
             el: 'entry-container',
             template: '#virtue_template',
-            data : data
+            data: data,
+            oncomplete: addBlurEvents
         });
 
+        
+        
+        console.warn(ractive.data);
+
+
         ractive.on('increment', function (event) {
-            console.log('increment', event);
-            /**
-            ractive.set('Virtues.' + event.index.virtue, ++event.context);
-            console.log(ractive.data);
+            console.log('increment', event.context);
+            var value = event.context + 1;
+            var virtue = event.index.virtue
+            console.log(value, virtue, ractive.data.Virtues[virtue])
+            ractive.data.Virtues[virtue] = value;
+            ractive.update('Virtues.' + virtue);
             var data = format(ractive.data);
-            console.info(data);
-            **/
+            console.log(data)
+            console.log(data)
+            change.value = 1;
+            change.virtue = virtue;
+            save(data).then(success).fail(rollback);
         });
 
         ractive.on('decrement', function (event) {
-            console.warn('decrement', event);
-            ractive.set('Virtues.' + event.index.virtue, --event.context);
-            console.log(ractive.data);
+            console.warn('decrement', event.context);
+            var value = event.context - 1;
+            var virtue = event.index.virtue
+            console.log(value, virtue, ractive.data.Virtues[virtue]);
+            ractive.data.Virtues[virtue] = value;
+            ractive.update('Virtues.' + virtue);
+            change.value = -1;
+            change.virtue = virtue;
+
             var data = format(ractive.data);
-            console.info(data);
+            console.log(data);
+            save(data).then(success).fail(rollback);
+        });
+
+        ractive.on('update', function (event) {
+            console.log('update', arguments);
         });
     }
 
 
-    function failed() {
-        console.warn('failed to load data');
+
+    function addBlurEvents() {
+        $virtueValues = $('.virtue-value');
+        $virtueValues.change(function () {
+            ractive.fire('update', this)
+        });
     }
 
 
-    function load() {
-       return $.ajax({
-            url: '/Entry/TodaysData/' + $id.val(),
-            type: 'get',
+
+    function success(data) {
+        $modal.modal('hide')
+        console.info('successfully saved')
+        console.log(ractive.data)
+        console.log(data)
+    }
+
+
+    function rollback() {
+        $modal.modal('hide')
+        console.warn('rollback values');
+    }
+
+
+
+    function save(data) {
+        $modal.modal();
+        return $.ajax({
+            type: 'post',
+            url: '/Entry/Save',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
             dataType : 'json'
         })
     }
 
 
     function format(entry) {
-        if (entry.hasOwnProperty("Virtues")) {
-
-            if (!entry.hasOwnProperty("Total")) {
-                entry["Total"] = 0;
-            }
-
-            for (var virtue in entry.Virtues) {
-                var value = entry.Virtues[virtue];
-                entry["Total"] = entry["Total"] + value;
-                entry[virtue] = value;
-            }
-
-            delete entry["Virtues"];
+        var data = {
+            Id: entry.Id,
+            EntryDate: entry.EntryDate,
+            UserID: entry.UserID,
+            Total: 0
         }
 
-        return entry;
-    }
-
-
-
-    function submits() {
-
-        $.ajax({
-            type: 'post',
-            url: '/Entry/Save',
-            contentType: 'application/json',
-            data: JSON.stringify(mockEntry),
-            dataType : 'json',
-            success: function (data) {
-                console.info(data);
-            },
-            error: function () {
-                console.warn('error')
+        if (entry.hasOwnProperty("Virtues")) {
+            for (var virtue in entry.Virtues) {
+                var value = entry.Virtues[virtue];
+                data["Total"] = data["Total"] + value;
+                data[virtue] = value;
             }
-        })
 
+        }
+
+        return data;
     }
+
+
+
+    function failed() {
+        console.warn('failed to load data');
+    }
+
 
 
 
