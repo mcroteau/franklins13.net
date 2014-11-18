@@ -29,6 +29,24 @@ namespace franklins13.net.Controllers
 
 
 
+        public ActionResult History()
+        {
+            var user = UserManager.FindById(User.Identity.GetUserId());
+
+            var EntryList = new List<Entry>();
+
+            var EntryQuery = from e in db.Entries
+                             where e.UserID == user.Id
+                             select e;
+
+            EntryList.AddRange(EntryQuery.Distinct());
+
+            return View(EntryList);
+        }
+
+
+
+
         [Authorize]
         public ActionResult Today()
         {
@@ -36,8 +54,10 @@ namespace franklins13.net.Controllers
             var today = DateTime.Now;
 
             var query = from e in db.Entries
-                            where e.EntryDate == today
-                            select e;
+                    where (e.EntryDate.Day == today.Day &&
+                    e.EntryDate.Month == today.Month &&
+                    e.EntryDate.Year == today.Year)
+                    select e;
 
             Entry entry = query.FirstOrDefault();
 
@@ -52,13 +72,9 @@ namespace franklins13.net.Controllers
 
             entry.ApplicationUser.Entries = null;
 
-
-            var settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
-            var data = JsonConvert.SerializeObject(entry, Formatting.None, settings);
-
-            //return Json(data, JsonRequestBehavior.AllowGet);
             return View(entry);
         }
+
 
 
         [HttpPost]
@@ -73,6 +89,7 @@ namespace franklins13.net.Controllers
             string json = new StreamReader(request).ReadToEnd();
 
             Entry entry = null;
+            EntryResponse response;
             try
             {
                 entry = JsonConvert.DeserializeObject<Entry>(json);
@@ -81,53 +98,101 @@ namespace franklins13.net.Controllers
                 {
                     db.Entry(existingEntry).CurrentValues.SetValues(entry);
                     db.SaveChanges();
-                    return Json("");
+                    response = GetEntryResponse(existingEntry);
+                }
+                else
+                {
+                    response = GetEntryResponse(entry);
                 }
             }
             catch (Exception e)
             {
-                return Json(e, JsonRequestBehavior.AllowGet);
+                return Json(new HttpStatusCodeResult(HttpStatusCode.BadRequest));
             }
 
-            var settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
-            var data = JsonConvert.SerializeObject(entry, Formatting.None, settings);
-            return Json(data, JsonRequestBehavior.AllowGet);
+            return Json(response, JsonRequestBehavior.AllowGet);
 
         }
 
 
 
 
-        public JsonResult Edit(int? id)
+        public JsonResult TodaysData(int? id)
         {
             if (id == null)
             {
                 return Json(new HttpStatusCodeResult(HttpStatusCode.BadRequest));
             }
+
             Entry entry = db.Entries.Find(id);
             if (entry == null)
             {
                 return Json(HttpNotFound());
             }
 
-            var settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
-            var data = JsonConvert.SerializeObject(entry, Formatting.None, settings);
-            return Json(data, JsonRequestBehavior.AllowGet);
+            EntryResponse response = GetEntryResponse(entry);
+
+            return Json(response, JsonRequestBehavior.AllowGet);
         }
 
 
 
 
-        public JsonResult TodaysData()
+        private EntryResponse GetEntryResponse(Entry entry)
         {
+            EntryResponse response = new EntryResponse();
+            response.Id = entry.Id;
+            response.UserID = entry.UserID;
+            response.EntryDate = entry.EntryDate;
 
-            return Json("");
+            Virtues Virtues = new Virtues();
+            Virtues.Temperance = entry.Temperance;
+            Virtues.Silence = entry.Silence;
+            Virtues.Order = entry.Order;
+            Virtues.Resolution = entry.Resolution;
+            Virtues.Frugality = entry.Frugality;
+            Virtues.Industry = entry.Industry;
+            Virtues.Sincerity = entry.Sincerity;
+            Virtues.Justice = entry.Justice;
+            Virtues.Moderation = entry.Moderation;
+            Virtues.Cleanliness = entry.Cleanliness;
+            Virtues.Tranquility = entry.Tranquility;
+            Virtues.Chastity = entry.Chastity;
+            Virtues.Humility = entry.Humility;
+
+            response.Virtues = Virtues;
+
+            return response;
         }
 
 
 
-        private JsonResult FormatData(string original){
-            return Json("");
+        public class EntryResponse
+        {
+            public int Id { get; set; }
+            public DateTime EntryDate { get; set; }
+            public string UserID { get; set; }
+            public Virtues Virtues { get; set; }
         }
+
+
+        public class Virtues
+        {
+            public int Temperance { get; set; }
+            public int Silence { get; set; }
+            public int Order { get; set; }
+            public int Resolution { get; set; }
+            public int Frugality { get; set; }
+            public int Industry { get; set; }
+            public int Sincerity { get; set; }
+            public int Justice { get; set; }
+            public int Moderation { get; set; }
+            public int Cleanliness { get; set; }
+            public int Tranquility { get; set; }
+            public int Chastity { get; set; }
+            public int Humility { get; set; }
+        }
+
+
     }
 }

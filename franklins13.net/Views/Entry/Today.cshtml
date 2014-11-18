@@ -1,14 +1,14 @@
-﻿@section JavaScript{
+﻿@model franklins13.net.Models.Entry
+
+@section JavaScript{
     <script type="text/javascript" src="@Url.Content("/Scripts/ractive.js")"></script>
-    <!--<script type="text/javascript" src="@Url.Content("/Scripts/mustache.js")"></script>-->
+    <script type="text/javascript" src="@Url.Content("/Scripts/bootstrap.min.js")"></script>
 }
 
 @{
     ViewBag.Title = "View";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<h2>Todays Entry</h2>
 
 <style type="text/css">
     .virtue-row{
@@ -32,31 +32,38 @@
         text-align:center;
         display:inline-block;
     }
+
 </style>
 
-@using (Html.BeginForm())
-{
-    
-    <div id="entry-container" style="text-align:center">
-
-        <div class="row virtue-row">
-            <div class="col-md-12" style="margin:auto;">
-                <span class="principal">Temperance</span>
-                <a href="javascript:" class="btn btn-default btn-lg">-</a>
-                <input type="text" name="" class="form-control"/>
-                <a href="javascript:" class="btn btn-default btn-lg">+</a>
+<div class="modal" id="modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Loading&hellip;</p>
             </div>
         </div>
+    </div>
+</div>
+
+
+<div class="row">
+
+    <div class="col-md-12">
+
+        <h2 style="text-align:center">Todays Entry</h2>
+
+        <input type="hidden" id="id" value="@Model.Id" />
+
+        <div id="entry-container" style="text-align:center; background:#fff"></div>
 
     </div>
+</div>
 
-}
 
-<a href="javascript:" id="submit">Submit</a>
 
 
 <script type="text/template" id="virtue_template">
-{{#virtues:virtue}}
+{{#Virtues:virtue}}
     <div id="row_virtue_{{i}}" class="row virtue-row">
         <div class="col-md-12" style="margin:auto;">
             <span class="principal">{{virtue}}</span>
@@ -65,7 +72,7 @@
             <a href="javascript:" class="btn btn-default" on-click="increment">+</a>
         </div>
     </div>
-{{/virtues}}
+{{/Virtues}}
 </script>
 
 
@@ -73,62 +80,16 @@
 <script type="text/javascript">
 $(document).ready(function () {
 
-    var $submit = $('#submit'),
-        $entryContainer = $('#entry_container');
-
-    $submit.click(submit);
-
     var ractive;
+
+    var $id = $('#id'),
+        $modal = $('#modal');
+
+    var $entryContainer = $('#entry_container');
+
 
     function init() {
         load().then(render).fail(failed);
-    }
-
-    var data = {
-        "Id": 2,
-        "virtues": {
-            "Temperance": -8,
-            "Silence": -4,
-            "Order": -7,
-            "Resolution": 2,
-            "Frugality": -1,
-            "Industry": -12,
-            "Sincerity": 13,
-            "Justice": 16,
-            "Moderation": 3,
-            "Cleanliness": 10,
-            "Tranquility": 5,
-            "Chastity": -15,
-            "Humility": -1
-        },
-        "EntryDate": "2014-11-09T08:57:24.327",
-        "UserID": "63079c23-8dcf-4e12-89f2-162cbfa9dc35"
-    };
-
-    var data2 = {
-        "Id": 2,
-        "virtues": {
-            "Temperance": -1,
-            "Silence": -3,
-            "Order": 4,
-            "Resolution": -5,
-            "Frugality": 7,
-            "Industry": 2,
-            "Sincerity": 1,
-            "Justice": 5,
-            "Moderation": 7,
-            "Cleanliness": -5,
-            "Tranquility": -3,
-            "Chastity": -3,
-            "Humility": 4
-        },
-        "EntryDate": "2014-11-09T08:57:24.327",
-        "UserID": "63079c23-8dcf-4e12-89f2-162cbfa9dc35"
-    };
-
-
-    function submit() {
-        render(data);
     }
 
 
@@ -141,14 +102,20 @@ $(document).ready(function () {
 
         ractive.on('increment', function (event) {
             console.log('increment', event);
-            ractive.set('virtues.' + event.index.virtue, ++event.context);
+            /**
+            ractive.set('Virtues.' + event.index.virtue, ++event.context);
             console.log(ractive.data);
+            var data = format(ractive.data);
+            console.info(data);
+            **/
         });
 
         ractive.on('decrement', function (event) {
             console.warn('decrement', event);
-            ractive.set('virtues.' + event.index.virtue, --event.context);
+            ractive.set('Virtues.' + event.index.virtue, --event.context);
             console.log(ractive.data);
+            var data = format(ractive.data);
+            console.info(data);
         });
     }
 
@@ -159,37 +126,36 @@ $(document).ready(function () {
 
 
     function load() {
-        $.ajax({
-            url: '/Entry/TodaysData',
+       return $.ajax({
+            url: '/Entry/TodaysData/' + $id.val(),
             type: 'get',
             dataType : 'json'
         })
     }
 
 
+    function format(entry) {
+        if (entry.hasOwnProperty("Virtues")) {
+
+            if (!entry.hasOwnProperty("Total")) {
+                entry["Total"] = 0;
+            }
+
+            for (var virtue in entry.Virtues) {
+                var value = entry.Virtues[virtue];
+                entry["Total"] = entry["Total"] + value;
+                entry[virtue] = value;
+            }
+
+            delete entry["Virtues"];
+        }
+
+        return entry;
+    }
 
 
 
     function submits() {
-        var mockEntry = {
-            "Id": 2,
-            "Temperance": -8,
-            "Silence": -4,
-            "Order": -7,
-            "Resolution": 2,
-            "Frugality": -1,
-            "Industry": -12,
-            "Sincerity": 13,
-            "Justice": 16,
-            "Moderation": 3,
-            "Cleanliness": 10,
-            "Tranquility": 5,
-            "Chastity": -15,
-            "Humility": -1,
-            "EntryDate": "2014-11-09T08:57:24.327",
-            "UserID": "63079c23-8dcf-4e12-89f2-162cbfa9dc35"
-        };
-
 
         $.ajax({
             type: 'post',
@@ -206,6 +172,10 @@ $(document).ready(function () {
         })
 
     }
+
+
+
+    init();
 
 });
 </script>

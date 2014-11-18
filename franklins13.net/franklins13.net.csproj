@@ -152,6 +152,7 @@
     <Content Include="Scripts\mustache.js" />
     <Content Include="Scripts\ractive.js" />
     <Content Include="Views\Entry\Today.cshtml" />
+    <Content Include="Views\Entry\History.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
