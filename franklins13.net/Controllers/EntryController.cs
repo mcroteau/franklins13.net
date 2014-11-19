@@ -29,6 +29,7 @@ namespace franklins13.net.Controllers
 
 
 
+        [Authorize]
         public ActionResult History()
         {
             var user = UserManager.FindById(User.Identity.GetUserId());
@@ -43,6 +44,29 @@ namespace franklins13.net.Controllers
 
             return View(EntryList);
         }
+
+
+
+
+        [Authorize]
+        public ActionResult Edit(int? id)
+        {
+            var user = UserManager.FindById(User.Identity.GetUserId());
+            var query = from e in db.Entries
+                        where (e.Id == id &&
+                        e.UserID == user.Id)
+                        select e;
+
+            Entry entry = query.FirstOrDefault();
+
+            if (entry == null)
+            {
+                return RedirectToAction("History");
+            }
+
+            return View(entry);
+        }
+
 
 
 
@@ -70,10 +94,9 @@ namespace franklins13.net.Controllers
                 db.SaveChanges();
             }
 
-            //entry.ApplicationUser.Entries = null;
-
             return View(entry);
         }
+
 
 
 
@@ -96,7 +119,20 @@ namespace franklins13.net.Controllers
                 var existingEntry = db.Entries.Find(entry.Id);
                 if (existingEntry != null)
                 {
-                    db.Entry(existingEntry).CurrentValues.SetValues(entry);
+                    existingEntry.Temperance = entry.Temperance;
+                    existingEntry.Silence = entry.Silence;
+                    existingEntry.Order = entry.Order;
+                    existingEntry.Resolution = entry.Resolution;
+                    existingEntry.Frugality = entry.Frugality;
+                    existingEntry.Industry = entry.Industry;
+                    existingEntry.Sincerity = entry.Sincerity;
+                    existingEntry.Justice = entry.Justice;
+                    existingEntry.Moderation = entry.Moderation;
+                    existingEntry.Cleanliness = entry.Cleanliness;
+                    existingEntry.Tranquility = entry.Tranquility;
+                    existingEntry.Chastity = entry.Chastity;
+                    existingEntry.Humility = entry.Humility;
+                    existingEntry.Total = entry.Total;
                     db.SaveChanges();
                     response = GetEntryResponse(existingEntry);
                 }
@@ -117,7 +153,7 @@ namespace franklins13.net.Controllers
 
 
 
-        public JsonResult TodaysData(int? id)
+        public JsonResult Data(int? id)
         {
             if (id == null)
             {
@@ -142,8 +178,9 @@ namespace franklins13.net.Controllers
         {
             EntryResponse response = new EntryResponse();
             response.Id = entry.Id;
+            response.Total = entry.Total;
             response.UserID = entry.UserID;
-            response.EntryDate = entry.EntryDate;
+            response.EntryDate = entry.EntryDate.ToString("dd MMM yyyy");
 
             Virtues Virtues = new Virtues();
             Virtues.Temperance = entry.Temperance;
@@ -170,7 +207,8 @@ namespace franklins13.net.Controllers
         public class EntryResponse
         {
             public int Id { get; set; }
-            public DateTime EntryDate { get; set; }
+            public int Total { get; set; }
+            public string EntryDate { get; set; }
             public string UserID { get; set; }
             public Virtues Virtues { get; set; }
         }

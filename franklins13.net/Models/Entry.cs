@@ -15,6 +15,9 @@ namespace franklins13.net.Models
         public int Id { get; set; }
 
         [DefaultValue(0)]
+        public int Total { get; set; }
+
+        [DefaultValue(0)]
         public int Temperance { get; set; }
 
         [DefaultValue(0)]

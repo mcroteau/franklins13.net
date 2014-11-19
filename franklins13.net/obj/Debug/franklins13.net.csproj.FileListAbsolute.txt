@@ -55,3 +55,4 @@ C:\cygwin64\home\mscroteau\franklins13.net\franklins13.net\obj\Debug\franklins13
 C:\cygwin64\home\mscroteau\franklins13.net\franklins13.net\obj\Debug\franklins13.net.pdb
 C:\cygwin64\home\mscroteau\franklins13.net\franklins13.net\obj\Debug\franklins13.net.Migrations.firstmigration.resources
 C:\cygwin64\home\mscroteau\franklins13.net\franklins13.net\obj\Debug\franklins13.net.csproj.GenerateResource.Cache
+C:\cygwin64\home\mscroteau\franklins13.net\franklins13.net\obj\Debug\franklins13.net.Migrations.EntryTotal.resources

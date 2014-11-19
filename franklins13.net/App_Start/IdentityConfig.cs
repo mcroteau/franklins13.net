@@ -142,19 +142,19 @@ namespace IdentitySample.Models
             for (int m = 0; m < 30; m++)
             {
                 Random random = new Random();
-                int temperance = random.Next(-20, 20);
-                int silence = random.Next(-20, 20);
-                int order = random.Next(-20, 20);
-                int resolution = random.Next(-20, 20);
-                int frugality = random.Next(-20, 20);
-                int industry = random.Next(-20, 20);
-                int sincerity = random.Next(-20, 20);
-                int justice = random.Next(-20, 20);
-                int moderation = random.Next(-20, 20);
-                int cleanliness = random.Next(-20, 20);
-                int tranquility = random.Next(-20, 20);
-                int chastity = random.Next(-20, 20);
-                int humility = random.Next(-20, 20);
+                int temperance = random.Next(-10, 10);
+                int silence = random.Next(-10, 10);
+                int order = random.Next(-10, 10);
+                int resolution = random.Next(-10, 10);
+                int frugality = random.Next(-10, 10);
+                int industry = random.Next(-10, 10);
+                int sincerity = random.Next(-10, 10);
+                int justice = random.Next(-10, 10);
+                int moderation = random.Next(-10, 10);
+                int cleanliness = random.Next(-10, 10);
+                int tranquility = random.Next(-10, 10);
+                int chastity = random.Next(-10, 10);
+                int humility = random.Next(-10, 10);
 
                 entry.EntryDate = today.AddDays(-m);
 
@@ -172,12 +172,28 @@ namespace IdentitySample.Models
                 entry.Chastity = chastity;
                 entry.Humility = humility;
 
+
+                int total = entry.Temperance + entry.Silence + entry.Order
+                    + entry.Resolution + entry.Frugality + entry.Industry
+                    + entry.Sincerity + entry.Justice + entry.Moderation
+                    + entry.Cleanliness + entry.Tranquility + entry.Chastity
+                    + entry.Humility;
+
+                entry.Total = total;
+
                 entry.UserID = mockUser.Id;
 
                 db.Entries.Add(entry);
                 db.SaveChanges();
             }
         }
+
+
+        private int TallyTotal(Entry entry){
+
+            return 0;
+        }
+
 
 
   

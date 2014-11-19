@@ -15,14 +15,16 @@
         <tr>
             <th>Id</th>
             <th>Date</th>
-            <th>Temperance</th>
+            <th>Total</th>
+            <th></th>
         </tr>
         @foreach (var entry in Model)
         {
             <tr>
                 <td>@entry.Id</td>
                 <td>@entry.EntryDate</td>
-                <td>@entry.Temperance</td>
+                <td>@entry.Total</td>
+                <td>@Html.ActionLink("Edit", "Edit", new { id = entry.Id})</td>
             </tr>
         }
     </table>

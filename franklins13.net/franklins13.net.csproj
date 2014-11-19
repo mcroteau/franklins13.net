@@ -153,6 +153,7 @@
     <Content Include="Scripts\ractive.js" />
     <Content Include="Views\Entry\Today.cshtml" />
     <Content Include="Views\Entry\History.cshtml" />
+    <Content Include="Views\Entry\Edit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -244,6 +245,10 @@
     <Compile Include="Migrations\201411070024480_first-migration.Designer.cs">
       <DependentUpon>201411070024480_first-migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411192014401_EntryTotal.cs" />
+    <Compile Include="Migrations\201411192014401_EntryTotal.Designer.cs">
+      <DependentUpon>201411192014401_EntryTotal.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdminViewModel.cs" />
@@ -260,6 +265,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201411070024480_first-migration.resx">
       <DependentUpon>201411070024480_first-migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411192014401_EntryTotal.resx">
+      <DependentUpon>201411192014401_EntryTotal.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

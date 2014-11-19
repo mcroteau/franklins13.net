@@ -11,37 +11,37 @@
 }
 
 <style type="text/css">
-    .virtue-row{
-        margin:7px auto !important;
-        display:block;
+    .virtue-row {
+        margin: 7px auto !important;
+        display: block;
     }
 
-    .virtue-row:hover{
-        background:#f8f8f8;
+    .virtue-row:hover {
+        background: #f8f8f8;
     }
 
-    .principal{
-        width:100px;
-        text-align:left;
-        display:inline-block;
+    .principal {
+        width: 100px;
+        text-align: left;
+        display: inline-block;
     }
 
-    .form-control{
-        width:45px;
-        padding:4px;
-        text-align:center;
-        display:inline-block;
+    .form-control {
+        width: 45px;
+        padding: 4px;
+        text-align: center;
+        display: inline-block;
     }
 
-    .virtue-value{
-        width:40px;
-        padding:7px;
-        text-align:center;
-        border-radius:3px;
-        display:inline-block;
-        background:#efefef;
+    .virtue-value {
+        width: 40px;
+        padding: 7px;
+        text-align: center;
+        border-radius: 3px;
+        display: inline-block;
+        background: #efefef;
     }
-    
+
     .entry-date{
         text-align:center;
     }
@@ -51,10 +51,14 @@
 
 
 <div class="row">
-
     <div class="col-md-12">
 
-        <h3 style="text-align:center">Todays Entry</h3>
+        <h3 style="text-align:center">Edit Entry</h3>
+
+        <div class="entry-date">
+            <label>Date : </label>
+            <span>@Model.EntryDate.ToString("dd MMM yyyy")</span>
+        </div>
 
         <input type="hidden" id="id" value="@Model.Id" />
 
@@ -67,22 +71,22 @@
 
 
 <script type="text/template" id="virtue_template">
-<div class="entry-info">
-    <label>Date : </label>
-    <span>{{EntryDate}}</span>
-    <label>Total : </label>
-    <span>{{Total}}</span>
-</div>
-{{#Virtues:virtue}}
-    <div id="row_virtue_{{i}}" class="row virtue-row">
-        <div class="col-md-12" style="margin:auto;">
-            <span class="principal">{{virtue}}</span>
-            <a href="javascript:" class="btn btn-default" on-click="decrement">-</a>
-            <span class="virtue-value">{{.}}</span>
-            <a href="javascript:" class="btn btn-default" on-click="increment">+</a>
-        </div>
+    <div class="entry-info">
+        <label>Date : </label>
+        <span>{{EntryDate}}</span>
+        <label>Total : </label>
+        <span>{{Total}}</span>
     </div>
-{{/Virtues}}
+    {{#Virtues:virtue}}
+        <div id="row_virtue_{{i}}" class="row virtue-row">
+            <div class="col-md-12" style="margin:auto;">
+                <span class="principal">{{virtue}}</span>
+                <a href="javascript:" class="btn btn-default" on-click="decrement">-</a>
+                <span class="virtue-value">{{.}}</span>
+                <a href="javascript:" class="btn btn-default" on-click="increment">+</a>
+            </div>
+        </div>
+    {{/Virtues}}
 </script>
 
 
@@ -117,6 +121,8 @@ $(document).ready(function () {
 
 
     function render(data) {
+
+        console.info(data);
 
         ractive = new Ractive({
             el: 'entry-container',
