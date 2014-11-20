@@ -1,0 +1,53 @@
+﻿identitytest4
+bookstore
+identitytest
+
+- create blank web project
+
+- install identity sample
+install-package microsoft.aspnet.identity.samples -pre
+
+- update "DefaultConnection" configuration string in Web.config
+<add name="DefaultConnection" connectionString="Data Source=(LocalDb)\v11.0;AttachDbFilename=|DataDirectory|\ApplicationData.mdf;Initial Catalog=ApplicationData;Integrated Security=True" providerName="System.Data.SqlClient" />
+
+- create App_Data directory
+
+- enable-migrations
+
+- create App_Data
+
+- create DAL directory
+
+- add-migration
+
+- JsonRequestBehavior.AllowGet
+
+
+IdentityConfig.cs
+
+
+http://johnnycode.com/2012/04/10/serializing-circular-references-with-json-net-and-entity-framework/
+http://stackoverflow.com/questions/9611316/system-net-http-missing-from-namespace-using-net-4-5
+
+http://stackoverflow.com/questions/20226715/globalconfiguration-configure-not-present-after-web-api-2-and-net-4-5-1-migra
+http://stackoverflow.com/questions/1153385/a-circular-reference-was-detected-while-serializing-an-object-of-type-subsonic
+
+var list = JsonConvert.SerializeObject(model,
+    Formatting.None,
+    new JsonSerializerSettings() {
+        ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+});
+
+
+
+identity SignInManager uses username not email
+update login view model, account controller and login.cshtml replacing email with username
+remove [EmailAddress] annotation on LoginViewModel
+ 
+
+
+- add identity specific configurations in db context
+modelBuilder.Entity<IdentityUserLogin>().HasKey<string>(l => l.UserId);
+modelBuilder.Entity<IdentityRole>().HasKey<string>(r => r.Id);
+modelBuilder.Entity<IdentityUserRole>().HasKey(r => new { r.RoleId, r.UserId });
+        

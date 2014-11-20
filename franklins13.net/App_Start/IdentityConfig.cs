@@ -185,6 +185,8 @@ namespace IdentitySample.Models
 
                 db.Entries.Add(entry);
                 db.SaveChanges();
+
+                System.Console.Write(entry.Id);
             }
         }
 
