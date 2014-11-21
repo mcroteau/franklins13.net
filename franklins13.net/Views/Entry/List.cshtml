@@ -18,7 +18,6 @@
             <th>Id</th>
             <th>Date</th>
             <th>Total</th>
-            <th></th>
         </tr>
         @foreach (var entry in Model)
         {
@@ -26,12 +25,12 @@
                 <td>@entry.Id</td>
                 <td>@entry.EntryDate</td>
                 <td>@entry.Total</td>
-                <td>
-                    @if (AuthorizationManager.HasPermission(ApplicationConstants.EDIT_ENTRY_PERMISSION + entry.Id, User.Identity.Name))
-                    {
-                       @Html.ActionLink("Edit", "Edit", new { id = entry.Id })
-                    }
-                </td>
+                @if (AuthorizationManager.IsPermitted(ApplicationConstants.EDIT_ENTRY_PERMISSION + entry.Id, User.Identity.Name))
+                {
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = entry.Id })
+                    </td>
+                }
             </tr>
         }
     </table>

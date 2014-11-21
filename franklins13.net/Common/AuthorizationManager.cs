@@ -16,10 +16,13 @@ namespace franklins13.net.Common
         protected static UserManager<ApplicationUser> UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
 
         
-        public static bool HasPermission(string PermissionString, string UserID)
+        public static bool IsPermitted(string PermissionString, string UserName)
         {
+
+            var user = UserManager.FindByName(UserName);
+
             var query = from e in db.AccountPermissions
-                        where (e.UserID == UserID &&
+                        where (e.UserID == user.Id &&
                         e.Permission == PermissionString)
                         select e;
 

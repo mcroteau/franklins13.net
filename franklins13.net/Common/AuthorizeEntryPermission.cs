@@ -3,6 +3,7 @@ using IdentitySample.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,16 +31,18 @@ namespace franklins13.net.Common
         protected override bool AuthorizeCore(HttpContextBase context)
         {
 
-            System.Console.Write(Permission);
-
             var isAuthorized = base.AuthorizeCore(context);
             if (!isAuthorized)
             {
                 return false;
             }
 
+            if (context.User.IsInRole("Admin"))
+            {
+                return true;
+            }
 
-            var EntryId = context.Request.RequestContext.RouteData.Values.ElementAt(2).Value;
+            var EntryId = context.Request.RequestContext.RouteData.Values["Id"];
             var UserID = context.User.Identity.GetUserId();
             var FullPermission = Permission + EntryId;
 
@@ -58,6 +61,31 @@ namespace franklins13.net.Common
             return false;
         }
 
+
+
+        public override void OnAuthorization(AuthorizationContext filterContext)
+        {
+            if (AuthorizeCore(filterContext.HttpContext))
+            {
+                HttpCachePolicyBase cachePolicy = filterContext.HttpContext.Response.Cache;
+                cachePolicy.SetProxyMaxAge(new TimeSpan(0));
+                cachePolicy.AddValidationCallback(CacheValidateHandler, null);
+            }
+            else
+            {
+                var values = new { controller = "Error", action = "Index" };
+                var routeDictionary = new RouteValueDictionary(values);
+                var result = new RedirectToRouteResult(routeDictionary);
+
+                filterContext.Result = result;
+            }
+        }
+
+
+        private void CacheValidateHandler(HttpContext context, object data, ref HttpValidationStatus validationStatus)
+        {
+            validationStatus = OnCacheAuthorization(new HttpContextWrapper(context));
+        }
 
 
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)

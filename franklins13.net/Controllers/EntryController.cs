@@ -84,7 +84,8 @@ namespace franklins13.net.Controllers
             var query = from e in db.Entries
                     where (e.EntryDate.Day == today.Day &&
                     e.EntryDate.Month == today.Month &&
-                    e.EntryDate.Year == today.Year)
+                    e.EntryDate.Year == today.Year) &&
+                    e.UserID == user.Id
                     select e;
 
             Entry entry = query.FirstOrDefault();
@@ -95,6 +96,12 @@ namespace franklins13.net.Controllers
                 entry.EntryDate = today;
                 entry.UserID = user.Id;
                 db.Entries.Add(entry);
+                db.SaveChanges();
+
+                var permission = new AccountPermission();
+                permission.Permission = ApplicationConstants.EDIT_ENTRY_PERMISSION + entry.Id;
+                permission.UserID = user.Id;
+                db.AccountPermissions.Add(permission);
                 db.SaveChanges();
             }
 

@@ -262,6 +262,7 @@ namespace IdentitySample.Controllers
             return View();
         }
 
+
         //
         // GET: /Account/ResetPasswordConfirmation
         [AllowAnonymous]
@@ -383,6 +384,8 @@ namespace IdentitySample.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View(model);
         }
+
+
 
         //
         // POST: /Account/LogOff
@@ -555,8 +558,9 @@ namespace IdentitySample.Controllers
             {
                 return Redirect(returnUrl);
             }
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Dashboard", "Account");
         }
+
 
         internal class ChallengeResult : HttpUnauthorizedResult
         {

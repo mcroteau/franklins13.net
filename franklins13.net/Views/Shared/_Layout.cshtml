@@ -22,14 +22,22 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Dashboard", "Dashboard", "Account")</li>
-                    <li>@Html.ActionLink("Today's Entry", "Today", "Entry")</li>
-                    <li>@Html.ActionLink("History", "History", "Entry")</li>
 
-                    @if (Request.IsAuthenticated && User.IsInRole("Admin")) {
-                        <li>@Html.ActionLink("RolesAdmin", "Index", "RolesAdmin")</li>
-                        <li>@Html.ActionLink("UsersAdmin", "Index", "UsersAdmin")</li>
+                    @if (Request.IsAuthenticated)
+                    {
+                        <li>@Html.ActionLink("Dashboard", "Dashboard", "Account")</li>
+                        <li>@Html.ActionLink("Today's Entry", "Today", "Entry")</li>
+                        <li>@Html.ActionLink("History", "History", "Entry")</li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li>@Html.ActionLink("RolesAdmin", "Index", "RolesAdmin")</li>
+                            <li>@Html.ActionLink("UsersAdmin", "Index", "UsersAdmin")</li>
+                        }
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                        <li>@Html.ActionLink("Today's Entry", "Today", "Entry")</li>
                     }
                 </ul>
                 @Html.Partial("_LoginPartial")
