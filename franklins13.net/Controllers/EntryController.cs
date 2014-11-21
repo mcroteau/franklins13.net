@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Data.Entity;
-
+using franklins13.net.Common;
 
 namespace franklins13.net.Controllers
 {
@@ -27,6 +27,11 @@ namespace franklins13.net.Controllers
             this.UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(this.db));
         }
 
+
+        public ActionResult List()
+        {
+            return View(db.Entries.ToList());
+        }
 
 
         [Authorize]
@@ -47,8 +52,7 @@ namespace franklins13.net.Controllers
 
 
 
-
-        [Authorize]
+        [AuthorizeEntryPermission(Permission = ApplicationConstants.EDIT_ENTRY_PERMISSION)]
         public ActionResult Edit(int? id)
         {
             var user = UserManager.FindById(User.Identity.GetUserId());

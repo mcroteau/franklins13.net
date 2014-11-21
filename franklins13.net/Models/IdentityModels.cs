@@ -13,6 +13,7 @@ namespace IdentitySample.Models
     {
         
         public virtual ICollection<Entry> Entries { get; set; }
+        public virtual ICollection<AccountPermission> AccountPermissions { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -28,6 +29,7 @@ namespace IdentitySample.Models
     {
 
         public DbSet<Entry> Entries { get; set; }
+        public DbSet<AccountPermission> AccountPermissions { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

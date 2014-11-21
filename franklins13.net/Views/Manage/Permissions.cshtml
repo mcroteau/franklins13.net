@@ -1,0 +1,33 @@
+﻿@model IEnumerable<franklins13.net.Models.AccountPermission>
+
+@{
+    ViewBag.Title = "Permissions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Permissions</h2>
+
+@if (Model.Count() > 0)
+{
+
+    <table class="table table-condensed table-bordered">
+        <tr>
+            <th>Id</th>
+            <th>User Id</th>
+            <th>Permission</th>
+        </tr>
+        @foreach (var entry in Model)
+        {
+            <tr>
+                <td>@entry.Id</td>
+                <td>@entry.UserID</td>
+                <td>@entry.Permission</td>
+            </tr>
+        }
+    </table>
+
+}
+else
+{
+    <div class="alert alert-info">You current have no permissions...</div>
+}

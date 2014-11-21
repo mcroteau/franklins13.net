@@ -1,7 +1,9 @@
-﻿using IdentitySample.Models;
+﻿using franklins13.net.Models;
+using IdentitySample.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -12,6 +14,9 @@ namespace IdentitySample.Controllers
     [Authorize]
     public class ManageController : Controller
     {
+
+        protected ApplicationDbContext db = new ApplicationDbContext();
+
         public ManageController()
         {
         }
@@ -329,6 +334,23 @@ namespace IdentitySample.Controllers
             }
             var result = await UserManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
             return result.Succeeded ? RedirectToAction("ManageLogins") : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
+        }
+
+
+        [Authorize]
+        public ActionResult Permissions()
+        {
+            var user = UserManager.FindById(User.Identity.GetUserId());
+
+            var PermissionList = new List<AccountPermission>();
+
+            var PermissionQuery = from e in db.AccountPermissions
+                             where e.UserID == user.Id
+                             select e;
+
+            PermissionList.AddRange(PermissionQuery.Distinct());
+
+            return View(PermissionList);
         }
 
         #region Helpers

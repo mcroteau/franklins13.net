@@ -1,0 +1,44 @@
+﻿@model IEnumerable<franklins13.net.Models.Entry>
+@using IdentitySample.Models;
+@using franklins13.net.Common;
+
+@{
+    ViewBag.Title = "History";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>List</h2>
+
+
+@if (Model.Count() > 0)
+{
+
+    <table class="table table-condensed table-bordered">
+        <tr>
+            <th>Id</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th></th>
+        </tr>
+        @foreach (var entry in Model)
+        {
+            <tr>
+                <td>@entry.Id</td>
+                <td>@entry.EntryDate</td>
+                <td>@entry.Total</td>
+                <td>
+                    @if (AuthorizationManager.HasPermission(ApplicationConstants.EDIT_ENTRY_PERMISSION + entry.Id, User.Identity.Name))
+                    {
+                       @Html.ActionLink("Edit", "Edit", new { id = entry.Id })
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+
+}
+else
+{
+    <div class="alert alert-info">No Entries logged yet...</div>
+}
+

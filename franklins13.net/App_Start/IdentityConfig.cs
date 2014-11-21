@@ -11,6 +11,7 @@ using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Web;
 using franklins13.net.Models;
+using franklins13.net.Common;
 
 namespace IdentitySample.Models
 {
@@ -18,10 +19,13 @@ namespace IdentitySample.Models
 
     public class ApplicationUserManager : UserManager<ApplicationUser>
     {
+
+
         public ApplicationUserManager(IUserStore<ApplicationUser> store)
             : base(store)
         {
         }
+
 
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options,
             IOwinContext context)
@@ -69,6 +73,8 @@ namespace IdentitySample.Models
         }
     }
 
+
+
     // Configure the RoleManager used in the application. RoleManager is defined in the ASP.NET Identity core assembly
     public class ApplicationRoleManager : RoleManager<IdentityRole>
     {
@@ -104,24 +110,33 @@ namespace IdentitySample.Models
 
     public class ApplicationDbInitializer : DropCreateDatabaseAlways<ApplicationDbContext> 
     {
+        
+        private const string MOCK_USERNAME1 = "mock123";
+        private const string MOCK_USERNAME2 = "mock456";
 
         protected override void Seed(ApplicationDbContext context) {
             InitializeIdentityForEF(context);
-            InitializeMockUser(context);
+            InitializeMockUsers(context);
             InitializeMockEntries(context);
             base.Seed(context);
         }
 
 
-        public static void InitializeMockUser(ApplicationDbContext db)
+        private void InitializeMockUsers(ApplicationDbContext db)
+        {
+            CheckCreateMockUser(MOCK_USERNAME1);
+            CheckCreateMockUser(MOCK_USERNAME2);
+        }
+
+
+        private void CheckCreateMockUser(string username)
         {
             var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            var password = "mikec123";
-            var mockUser = userManager.FindByName("mikec");
+            var mockUser = userManager.FindByName(username);
             if (mockUser == null)
             {
-                mockUser = new ApplicationUser { UserName = "mikec", Email = "croteau.mike@gmail.com" };
-                var result = userManager.Create(mockUser, password);
+                mockUser = new ApplicationUser { UserName = username, Email = username + "@email.com" };
+                var result = userManager.Create(mockUser, username);
                 if (!result.Succeeded)
                 {
                     throw new Exception("Failed to create ApplicationUser");
@@ -134,7 +149,7 @@ namespace IdentitySample.Models
         public static void InitializeMockEntries(ApplicationDbContext db)
         {
             var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            var mockUser = userManager.FindByName("mikec");
+            var mockUser = userManager.FindByName(MOCK_USERNAME1);
 
             var entry = new Entry();
             var today = DateTime.Now;
@@ -186,13 +201,17 @@ namespace IdentitySample.Models
                 db.Entries.Add(entry);
                 db.SaveChanges();
 
-                System.Console.Write(entry.Id);
+
+                var permission = new AccountPermission();
+                permission.UserID = mockUser.Id;
+                permission.Permission = ApplicationConstants.EDIT_ENTRY_PERMISSION + entry.Id;
+                db.AccountPermissions.Add(permission);               
+                db.SaveChanges();
             }
         }
 
 
         private int TallyTotal(Entry entry){
-
             return 0;
         }
 
